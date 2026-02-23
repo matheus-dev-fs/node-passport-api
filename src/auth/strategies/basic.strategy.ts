@@ -22,7 +22,7 @@ export const basicStrategy: BasicStrategy = new BasicStrategy(async (
             return;
         }
 
-        return done(null, { email, password });
+        return done(null, user);
     } catch (error) {
         return done(error as Error);
     }}

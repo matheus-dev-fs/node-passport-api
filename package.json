@@ -19,12 +19,13 @@
     "dev": "node --import=tsx --watch src/server.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.6",
     "@types/passport": "^1.0.17",
     "@types/passport-http": "^0.3.11",
+    "@types/pg": "^8.16.0",
     "@types/sequelize": "^4.28.20",
-    "@types/bcrypt": "^6.0.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "express": "^5.2.1",
     "passport": "^0.7.0",
     "passport-http": "^0.3.0",
+    "pg": "^8.18.0",
     "sequelize": "^6.37.7",
     "tsx": "^4.21.0"
   }
