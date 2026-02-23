@@ -1,0 +1,35 @@
+{
+  "name": "passport-api",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/matheus-dev-fs/node-passport-api#readme",
+  "bugs": {
+    "url": "https://github.com/matheus-dev-fs/node-passport-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matheus-dev-fs/node-passport-api.git"
+  },
+  "license": "ISC",
+  "author": "matheus-dev-fs",
+  "type": "module",
+  "main": "./src/server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --import=tsx --watch src/server.ts"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.6",
+    "@types/passport": "^1.0.17",
+    "@types/sequelize": "^4.28.20",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "passport": "^0.7.0",
+    "sequelize": "^6.37.7",
+    "tsx": "^4.21.0"
+  }
+}
