@@ -6,6 +6,7 @@ import type { CreateUserResult } from "../types/create-user-result.type.js";
 import type { ParseEmailAndPasswordResult } from "../interfaces/parse-email-and-password-result.interface.js";
 import { HttpError } from "../errors/http.error.js";
 import type { PublicUser } from "../interfaces/public-user.interface.js";
+import type { LoginUserResult } from "../types/login-user-result.type.js";
 
 export const ping: RequestHandler = (_req, res): void => {
     res.status(200).json({ message: "pong" });
@@ -19,7 +20,14 @@ export const login: RequestHandler = (req, res, next): void => {
         return;
     }
 
-    res.status(200).json({ message: "Login realizado com sucesso.", user });
+    const response: LoginUserResult = {
+        isValid: true,
+        status: 200,
+        message: "Login realizado com sucesso.",
+        data: user,
+    };
+
+    res.status(response.status).json(response);
 };
 
 export const register: RequestHandler = async (req, res, next): Promise<void> => {

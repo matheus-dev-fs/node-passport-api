@@ -25,3 +25,13 @@ export const getCredentialsOrThrow = (req: Request): ParseEmailAndPasswordResult
 
     return data;
 };
+
+export const checkBasicAuthorizationHeader = (authorization: string | undefined): void => {
+     if (!authorization) {
+        throw new HttpError(401, "Não autorizado");
+    }
+
+    if (!authorization.startsWith("Basic ")) {
+        throw new HttpError(401, "Não autorizado");
+    }
+}
