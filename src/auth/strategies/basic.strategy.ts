@@ -1,5 +1,5 @@
 import { BasicStrategy } from "passport-http";
-import { type UserInstance } from "../../models/user.model.js";
+import type { PublicUser } from "../../interfaces/public-user.interface.js";
 import { validateUserCredentials } from "../services/credentials.service.js";
 
 export const basicStrategy: BasicStrategy = new BasicStrategy(async (
@@ -15,7 +15,7 @@ export const basicStrategy: BasicStrategy = new BasicStrategy(async (
             return;
         }
 
-        const user: UserInstance | null = await validateUserCredentials(email, password);
+        const user: PublicUser | null = await validateUserCredentials(email, password);
 
         if (!user) {
             done(null, false);

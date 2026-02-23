@@ -1,10 +1,16 @@
 import bcrypt from "bcrypt";
 import { User, type UserInstance } from "../../models/user.model.js";
+import type { PublicUser } from "../../interfaces/public-user.interface.js";
+
+const toPublicUser = (user: UserInstance): PublicUser => ({
+    id: user.id,
+    email: user.email,
+});
 
 export const validateUserCredentials = async (
     email: string,
     password: string
-): Promise<UserInstance | null> => {
+): Promise<PublicUser | null> => {
     const user: UserInstance | null = await User.findOne({ where: { email } });
 
     if (!user) {
@@ -17,5 +23,5 @@ export const validateUserCredentials = async (
         return null;
     }
 
-    return user;
+    return toPublicUser(user);
 };

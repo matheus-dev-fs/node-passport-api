@@ -1,30 +1,25 @@
 import type { RequestHandler } from "express";
 import { User, type UserInstance } from "../models/user.model.js";
 import { getCredentialsOrThrow } from "../helpers/auth-request.helper.js";
-import { createUser, loginUser } from "../auth/services/user.service.js";
+import { createUser } from "../auth/services/user.service.js";
 import type { CreateUserResult } from "../types/create-user-result.type.js";
 import type { ParseEmailAndPasswordResult } from "../interfaces/parse-email-and-password-result.interface.js";
 import { HttpError } from "../errors/http.error.js";
-import type { LoginUserResult } from "../types/login-user-result.type.js";
+import type { PublicUser } from "../interfaces/public-user.interface.js";
 
 export const ping: RequestHandler = (_req, res): void => {
     res.status(200).json({ message: "pong" });
 };
 
-export const login: RequestHandler = async (req, res, next): Promise<void> => {
-    try {
-        const data: ParseEmailAndPasswordResult = getCredentialsOrThrow(req);
-        const { email, password }: ParseEmailAndPasswordResult = data;
-        const response: LoginUserResult = await loginUser(email, password);
+export const login: RequestHandler = (req, res, next): void => {
+    const user: PublicUser | undefined = req.user as PublicUser | undefined;
 
-        if (!response.isValid) {
-            throw new HttpError(response.status, response.message);
-        }
-
-        res.status(response.status).json({ message: response.message, user: response.data });
-    } catch (error) {
-        next(error);
+    if (!user) {
+        next(new HttpError(401, "Não autorizado"));
+        return;
     }
+
+    res.status(200).json({ message: "Login realizado com sucesso.", user });
 };
 
 export const register: RequestHandler = async (req, res, next): Promise<void> => {

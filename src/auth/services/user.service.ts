@@ -1,7 +1,6 @@
 import { User, type UserInstance } from "../../models/user.model.js";
 import type { CreateUserResult } from "../../types/create-user-result.type.js";
 import bcrypt from "bcrypt";
-import type { LoginUserResult } from "../../types/login-user-result.type.js";
 import { UniqueConstraintError } from "sequelize";
 
 export const createUser = async (email: string, password: string): Promise<CreateUserResult> => {
@@ -41,39 +40,5 @@ export const createUser = async (email: string, password: string): Promise<Creat
         }
 
         throw error;
-    }
-};
-
-export const loginUser = async (email: string, password: string): Promise<LoginUserResult> => {
-    const existingUser: UserInstance | null = await User.findOne({ where: { email } });
-
-    if (!existingUser) {
-        const response: LoginUserResult = {
-            isValid: false,
-            status: 401,
-            message: "Usuário e/ou senha inválidos.",
-        };
-        return response;
-    }
-
-    const isPasswordNotValid: boolean = !(await bcrypt.compare(password, existingUser.password));
-
-    if (isPasswordNotValid) {
-        const response: LoginUserResult = {
-            isValid: false,
-            status: 401,
-            message: "Usuário e/ou senha inválidos.",
-        };
-        return response;
-    }
-
-    return {
-        isValid: true,
-        status: 200,
-        message: "Login realizado com sucesso.",
-        data: {
-            id: existingUser.id,
-            email: existingUser.email,
-        }
     }
 };
