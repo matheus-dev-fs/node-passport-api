@@ -6,13 +6,13 @@ export const validateUserCredentials = async (
     password: string
 ): Promise<UserInstance | null> => {
     const user: UserInstance | null = await User.findOne({ where: { email } });
-    
+
     if (!user) {
         return null;
     }
 
     const IS_PASSWORD_INVALID: boolean = !(await bcrypt.compare(password, user.password));
-    
+
     if (IS_PASSWORD_INVALID) {
         return null;
     }
