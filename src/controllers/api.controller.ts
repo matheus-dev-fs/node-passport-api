@@ -4,6 +4,7 @@ import { parseEmailAndPassword } from "../utils/auth-request.util.js";
 import { createUser } from "../auth/services/user.service.js";
 import type { CreateUserResult } from "../types/create-user-result.type.js";
 import type { ParseEmailAndPasswordResult } from "../interfaces/parse-email-and-password-result.interface.js";
+import { HttpError } from "../errors/http.error.js";
 
 export const ping: RequestHandler = (req, res): void => {
     res.status(200).json({ message: "pong" });
@@ -18,7 +19,8 @@ export const register: RequestHandler = async (req, res, next): Promise<void> =>
         const data: ParseEmailAndPasswordResult | null = parseEmailAndPassword(req);
 
         if (!data) {
-            res.status(400).json({ message: "Email e/ou senha não fornecidos." });
+            const error: HttpError = new HttpError(400, "Email ou/e senha não informados.");
+            next(error);
             return;
         }
 
@@ -26,7 +28,8 @@ export const register: RequestHandler = async (req, res, next): Promise<void> =>
         const response: CreateUserResult = await createUser(email, password);
 
         if (!response.isValid) {
-            res.status(response.status).json({ message: response.message });
+            const error: HttpError = new HttpError(response.status, response.message);
+            next(error);
             return;
         }
 
@@ -36,14 +39,18 @@ export const register: RequestHandler = async (req, res, next): Promise<void> =>
     }
 };
 
-export const list: RequestHandler = async (req, res): Promise<void> => {
-    const users: UserInstance[] = await User.findAll();
+export const list: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+        const users: UserInstance[] = await User.findAll();
 
-    if (users.length === 0) {
-        res.status(200).json({ list: [] });
-        return;
+        if (users.length === 0) {
+            res.status(200).json({ list: [] });
+            return;
+        }
+
+        const emails: string[] = users.map((user: UserInstance): string => user.email);
+        res.status(200).json({ list: emails });
+    } catch (error) {
+        next(error);
     }
-
-    const emails: string[] = users.map((user: UserInstance): string => user.email);
-    res.status(200).json({ list: emails }); 
 };
