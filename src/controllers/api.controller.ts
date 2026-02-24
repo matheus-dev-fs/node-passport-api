@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import { User, type UserInstance } from "../models/user.model.js";
-import { getCredentialsOrThrow } from "../helpers/auth-request.helper.js";
-import { createUser } from "../auth/services/user.service.js";
+import { generateTokenJwt, getCredentialsOrThrow } from "../helpers/auth-request.helper.js";
+import { createUser, loginUser } from "../auth/services/user.service.js";
 import type { CreateUserResult } from "../types/create-user-result.type.js";
 import type { ParseEmailAndPasswordResult } from "../interfaces/parse-email-and-password-result.interface.js";
 import { HttpError } from "../errors/http.error.js";
@@ -12,35 +12,49 @@ export const ping: RequestHandler = (_req, res): void => {
     res.status(200).json({ message: "pong" });
 };
 
-export const login: RequestHandler = (req, res, next): void => {
-    const user: PublicUser | undefined = req.user as PublicUser | undefined;
+export const login: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+        const result: ParseEmailAndPasswordResult = getCredentialsOrThrow(req);
+        const { email, password }: ParseEmailAndPasswordResult = result;
+        const loginResult: LoginUserResult = await loginUser(email, password);
 
-    if (!user) {
-        next(new HttpError(401, "Não autorizado"));
-        return;
+        if (!loginResult.isValid) {
+            throw new HttpError(loginResult.status, loginResult.message);
+        }
+
+        const user: PublicUser | undefined = loginResult.data;
+
+        if (!user) {
+            throw new HttpError(500, "Erro ao realizar login.");
+        }
+
+        const token: string = generateTokenJwt({ id: user.id, email: user.email });
+
+        res.status(loginResult.status).json({ response: loginResult, token });
+    } catch (error) {
+        next(error);
     }
-
-    const response: LoginUserResult = {
-        isValid: true,
-        status: 200,
-        message: "Login realizado com sucesso.",
-        data: user,
-    };
-
-    res.status(response.status).json(response);
 };
 
 export const register: RequestHandler = async (req, res, next): Promise<void> => {
     try {
         const data: ParseEmailAndPasswordResult = getCredentialsOrThrow(req);
         const { email, password }: ParseEmailAndPasswordResult = data;
-        const response: CreateUserResult = await createUser(email, password);
+        const createUserResult: CreateUserResult = await createUser(email, password);
 
-        if (!response.isValid) {
-            throw new HttpError(response.status, response.message);
+        if (!createUserResult.isValid) {
+            throw new HttpError(createUserResult.status, createUserResult.message);
         }
 
-        res.status(response.status).json({ message: response.message, user: response.data });
+        const user: PublicUser | undefined = createUserResult.data;
+
+        if (!user) {
+            throw new HttpError(500, "Erro ao criar usuário.");
+        }
+
+        const token: string = generateTokenJwt({ id: user.id, email: user.email });
+
+        res.status(createUserResult.status).json({ response: createUserResult, token });
     } catch (error) {
         next(error);
     }

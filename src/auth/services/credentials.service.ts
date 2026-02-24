@@ -25,3 +25,13 @@ export const validateUserCredentials = async (
 
     return toPublicUser(user);
 };
+
+export const findUserById = async (id: number): Promise<PublicUser | null> => {
+    const user: UserInstance | null = await User.findByPk(id);
+
+    if (!user) {
+        return null;
+    }
+
+    return toPublicUser(user);
+};

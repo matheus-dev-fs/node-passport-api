@@ -1,6 +1,6 @@
 import passport from "passport";
-import { basicStrategy } from "../auth/strategies/basic.strategy.js";
+import { jwtStrategy } from "../auth/strategies/jwt.strategy.js";
 
-passport.use(basicStrategy);
+passport.use(jwtStrategy);
 
 export default passport;

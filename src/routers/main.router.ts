@@ -5,7 +5,7 @@ import { privateRoute } from "../middlewares/auth.middleware.js";
 const router: Router = Router();
 
 router.get("/ping", ApiController.ping);
-router.post("/login", privateRoute, ApiController.login);
+router.post("/login", ApiController.login);
 router.post("/register", ApiController.register);
 router.get("/list", privateRoute, ApiController.list);
 

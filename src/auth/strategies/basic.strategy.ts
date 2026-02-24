@@ -1,6 +1,6 @@
 import { BasicStrategy } from "passport-http";
-import type { PublicUser } from "../../interfaces/public-user.interface.js";
 import { validateUserCredentials } from "../services/credentials.service.js";
+import type { PublicUser } from "../../interfaces/public-user.interface.js";
 
 export const basicStrategy: BasicStrategy = new BasicStrategy(async (
     email,
@@ -11,19 +11,17 @@ export const basicStrategy: BasicStrategy = new BasicStrategy(async (
         const IS_EMAIL_OR_PASSWORD_NOT_SENT: boolean = !email || !password;
 
         if (IS_EMAIL_OR_PASSWORD_NOT_SENT) {
-            done(null, false);
-            return;
+            return done(null, false);
         }
 
         const user: PublicUser | null = await validateUserCredentials(email, password);
 
         if (!user) {
-            done(null, false);
-            return;
+            return done(null, false);
         }
 
         return done(null, user);
     } catch (error) {
         return done(error as Error);
-    }}
-);
+    }
+});
